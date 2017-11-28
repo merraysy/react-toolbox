@@ -51,6 +51,10 @@ const factory = (Tab, TabContent, FontIcon) => {
       this.updatePointer(nextProps.index);
     }
 
+    componentDidUpdate () {
+      this.updateArrows();
+    }
+
     componentWillUnmount () {
       window.removeEventListener('resize', this.handleResize);
       clearTimeout(this.resizeTimeout);
@@ -86,13 +90,19 @@ const factory = (Tab, TabContent, FontIcon) => {
 
     updateArrows = () => {
       const nav = this.navigationNode;
-      this.setState({
-        arrows: {
-          left: nav.scrollLeft > 0,
-          right: nav.scrollWidth > nav.clientWidth
-            && (nav.scrollLeft + nav.clientWidth) < nav.scrollWidth
-        }
-      });
+      const { left: prevLeft, right: prevRight } = this.state.arrows;
+      const left = nav.scrollLeft > 0;
+      const right = nav.scrollWidth > nav.clientWidth
+        && (nav.scrollLeft + nav.clientWidth) < nav.scrollWidth;
+
+      if (left !== prevLeft || right !== prevRight) {
+        this.setState({
+          arrows: {
+            left,
+            right
+          }
+        });
+      }
     }
 
     scrollNavigation = (factor) => {
